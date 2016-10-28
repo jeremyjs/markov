@@ -1,30 +1,32 @@
-import copy
-import random
+import copy, random
 from ListDict import ListDict
-
-def randomKey(some_dict):
-  return random.choice(list(some_dict.keys()))
+from randomKey import randomKey
+from isCapitalized import isCapitalized
 
 def isEndingWord(word):
   return len(word) > 0 and word[-1] in [".", "?", "!"]
 
 class MarkovDict:
-  def __init__(self, source=None):
+  def __init__(self, source=None, depth=1):
+    self.depth = depth
     if isinstance(source, dict):
       self.dict = ListDict(source)
     if not hasattr(self, 'dict'):
       self.dict = ListDict()
     if isinstance(source, list):
-      self.add(corpus)
+      self.add(source)
 
   def add(self, corpus=None):
     if corpus == None:
       return
-    prev_word = corpus[0]
-    rest = corpus[1:]
+    i = self.depth
+    prev_words = corpus[:i]
+    rest = corpus[i:]
     for word in rest:
-      self.dict[prev_word].append(word)
-      prev_word = word
+      for i in range(len(prev_words)):
+        prev_chunk = " ".join(prev_words[-i:])
+        self.dict[prev_chunk].append(word)
+      prev_words = prev_words[1:] + [word]
 
   def merge(self, markov_dict=None):
     if markov_dict == None:
@@ -44,13 +46,39 @@ class MarkovDict:
 
   def nextWord(self, words=None):
     if words == None:
-      key = randomKey(self.dict)
-      return random.choice(self.dict[key])
-    last_word = words[-1]
-    return random.choice(self.dict[last_word])
+      return randomKey(self.dict, isCapitalized).split()[0]
+    last_chunk = " ".join(words[len(words)-self.depth:])
+    return random.choice(self.dict[last_chunk])
 
   def response(self, message=None):
     words = [self.nextWord()]
     while not isEndingWord(words[-1]):
       words.append(self.nextWord(words))
     return " ".join(words)
+
+
+from Corpus import Corpus
+def test():
+  c1 = Corpus("Big round boulder. That is a round snake.")
+  c2 = Corpus("The dog is fat. The dog eats food. My dog is yellow. Your cat is yellow.")
+  c3 = Corpus("Look out! Look behind you. Are you there? Are you okay? To you, I defer.")
+
+  m1 = MarkovDict(c1)
+  m2 = MarkovDict(c2, 2)
+  m3 = MarkovDict(c3)
+
+  print ("m1:", m1.response())
+  print ("m1:", m1.response())
+  print ("m1:", m1.response())
+
+  print ("m2:", m2.response())
+  print ("m2:", m2.response())
+  print ("m2:", m2.response())
+
+  print ("m3:", m3.response())
+  print ("m3:", m3.response())
+  print ("m3:", m3.response())
+
+import sys
+if len(sys.argv) > 1 and sys.argv[1] == "--test":
+  test()
