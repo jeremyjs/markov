@@ -12,5 +12,16 @@ class MarkovBot:
     self.forward_dict.add(corpus)
     self.reverse_dict.add(reverseList(corpus))
 
-  def response(self, message=None):
-    return self.forward_dict.response(message)
+  def response(self, message=None, startWord=None):
+    if startWord != None:
+      first_half = self.reverse_dict.response(startWord, reverse=True)
+      first_half = " ".join(first_half.split()[:-1]) # remove keyword
+      second_half = self.forward_dict.response(startWord)
+      return first_half + " " + second_half
+    if message != None:
+      # TODO
+      pass
+    return self.randomResponse()
+
+  def randomResponse(self):
+    return self.forward_dict.response()

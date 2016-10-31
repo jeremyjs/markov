@@ -42,7 +42,7 @@ class MarkovDict:
     for key, values in self.dict.items():
       for value in values:
         reversed_dict[value].append(key)
-    return reversed_dict
+    return MarkovDict(reversed_dict)
 
   def nextWord(self, words=None):
     if words == None:
@@ -50,10 +50,19 @@ class MarkovDict:
     last_chunk = " ".join(words[len(words)-self.depth:])
     return random.choice(self.dict[last_chunk])
 
-  def response(self, message=None):
-    words = [self.nextWord()]
+  def response(self, startWord=None, reverse=False):
+    words = []
+    if startWord != None and startWord in self.dict:
+      words.append(startWord)
+    else:
+      words.append(self.nextWord())
+
     while not isEndingWord(words[-1]):
       words.append(self.nextWord(words))
+
+    if reverse:
+      words = words[::-1]
+
     return " ".join(words)
 
 

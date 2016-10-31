@@ -41,7 +41,7 @@ def main():
   print ("\nWelcome to MarkovBot! Type a message. Type 'exit()' to quit.")
   message = prompt()
   while message != "exit()":
-    print (bot.response(message))
+    print (bot.response(startWord=message))
     message = prompt()
 
 main()
