@@ -1,2 +1,2 @@
 def isCapitalized(str):
-  return str[0].isupper()
+    return str[0].isupper()
