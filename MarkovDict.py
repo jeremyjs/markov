@@ -25,7 +25,6 @@ class MarkovDict:
             self.dict = ListDict()
         if isinstance(source, list):
             self.add(source)
-        # print (self.dict)
 
     def add(self, corpus=None):
         if corpus is None:
@@ -72,7 +71,7 @@ class MarkovDict:
             words.extend(self.nextWords())
 
         while not isEndingWord(words[-1]):
-            if reverse and not isCapitalized(words[-1]):
+            if reverse and isCapitalized(words[-1]):
                 break
             words.extend(self.nextWords(words))
 

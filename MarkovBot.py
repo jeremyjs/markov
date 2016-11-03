@@ -2,9 +2,9 @@ from reverse import reverseList
 
 
 class MarkovBot:
-    def __init__(self, markov_dict):
-        self.forward_dict = markov_dict.cloned()
-        self.reverse_dict = markov_dict.reversed()
+    def __init__(self, forward_dict, reverse_dict):
+        self.forward_dict = forward_dict.cloned()
+        self.reverse_dict = reverse_dict.cloned()
 
     def trainOn(self, message=None):
         if message is None:
@@ -13,13 +13,13 @@ class MarkovBot:
         self.forward_dict.add(corpus)
         self.reverse_dict.add(reverseList(corpus))
 
-    def response(self, message=None, startWord=None):
-        if startWord is not None:
-            first_half = self.reverse_dict.response(startWord, reverse=True)
-            first_half = " ".join(first_half.split()[:-1])  # remove keyword
-            second_half = self.forward_dict.response(startWord)
-            print(first_half)
-            print(second_half)
+    def response(self, message=None, topic=None):
+        if topic is not None:
+            first_half = self.reverse_dict.response(topic, reverse=True)
+            first_half = first_half.split()
+            first_half = first_half[:-1]  # remove keyword
+            first_half = " ".join(first_half)
+            second_half = self.forward_dict.response(topic)
             return first_half + " " + second_half
         if message is not None:
             # TODO
